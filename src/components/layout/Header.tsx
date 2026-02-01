@@ -12,10 +12,12 @@ const Header: React.FC = () => {
 
   const navLinks = [
     { name: 'Shop All', href: '/products' },
-    { name: 'Desktop Mats', href: '/products?category=desktop-mat' },
-    { name: 'Laptop Mats', href: '/products?category=laptop-mat' },
+    { name: 'DeskMats', href: '/products?category=desk-mat' },
     { name: 'Mousepads', href: '/products?category=mousepad' },
-    { name: 'Accessories', href: '/products?category=accessory' },
+    { name: 'Posters', href: '/products?category=poster' },
+    { name: 'Custom Prints', href: '/products?category=custom' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -23,7 +25,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto">
         {/* Top bar */}
         <div className="hidden lg:flex items-center justify-between py-2 text-xs text-muted-foreground border-b border-border">
-          <p>Free shipping on orders over Rs. 75 🚚</p>
+          <p>Free shipping on orders over Rs. 1,500 🚚</p>
           <div className="flex items-center gap-6">
             <Link to="/designer-apply" className="hover:text-foreground transition-colors">
               Become a Designer

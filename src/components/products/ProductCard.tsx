@@ -7,6 +7,7 @@ import { Product } from '@/data/mockData';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   Tooltip,
   TooltipContent,
@@ -32,7 +33,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, product.sizes[0], product.colors[0]);
+    if (product.category === 'custom') {
+      navigate('/custom-design');
+    } else {
+      const added = addToCart(product, product.sizes[0], product.colors[0]);
+      if (added) {
+        toast.success(`Added ${product.name} to cart`);
+      } else {
+        toast.info(`${product.name} is already in your cart`);
+      }
+    }
   };
 
   const toggleWishlist = (e: React.MouseEvent) => {
@@ -43,12 +53,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
 
   return (
     <div
-      className={cn("group relative bg-white rounded-3xl p-3 border border-gray-100 hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-500", className)}
+      className={cn("group relative bg-white rounded-[2rem] p-4 border border-gray-100 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 ease-out", className)}
       style={style}
     >
       {/* Ghost Link - Makes the entire card clickable */}
       <Link
-        to={`/products/${product.id}`}
+        to={product.category === 'custom' ? '/custom-design' : `/products/${product.id}`}
         className="absolute inset-0 z-10 rounded-3xl"
         aria-label={`View details for ${product.name}`}
       />
@@ -60,18 +70,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover/card:scale-110"
+            className="h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover/card:scale-105"
           />
 
           {/* Luxury Glassmorphism Badges */}
           <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
             {product.newArrival && (
-              <Badge className="bg-white/90 backdrop-blur-md text-[#111827] border-0 font-black px-3 py-1 rounded-sm text-[9px] uppercase tracking-[0.2em] shadow-sm">
+              <Badge className="bg-white text-[#111827] border border-gray-100 font-black px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.2em] shadow-sm">
                 NEW
               </Badge>
             )}
             {product.limited && (
-              <Badge className="bg-[#111827]/90 backdrop-blur-md text-white border-0 font-black px-3 py-1 rounded-sm text-[9px] uppercase tracking-[0.2em] shadow-sm">
+              <Badge className="bg-[#111827] text-white border-0 font-black px-3 py-1.5 rounded-lg text-[9px] uppercase tracking-[0.2em] shadow-sm">
                 LIMITED
               </Badge>
             )}
@@ -88,58 +98,59 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
                 </p>
                 <div className="h-[1px] flex-grow mx-3 bg-gray-100/50" />
               </div>
-              <h3 className="text-sm font-bold text-[#111827] line-clamp-1 leading-tight tracking-tight">
+              <h3 className="text-lg font-bold text-[#111827] line-clamp-1 leading-tight tracking-tight">
                 {product.name}
               </h3>
               <div className="flex items-baseline gap-2 pt-0.5">
-                <span className="text-sm font-black text-[#F97316]">
-                  ${product.price.toFixed(2)}
+                <span className="text-xl font-black text-[#F97316]">
+                  Rs. {product.price.toLocaleString()}
                 </span>
                 {product.originalPrice && (
                   <span className="text-[10px] text-gray-300 line-through font-bold">
-                    ${product.originalPrice.toFixed(2)}
+                    Rs. {product.originalPrice.toLocaleString()}
                   </span>
                 )}
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.25em]">
                   {product.category.replace('-', ' ')}
                 </p>
-                <div className="flex items-center gap-1">
-                  <Star fill="currentColor" stroke="none" className="h-3 w-3 text-[#FBBF24]" />
-                  <span className="text-[10px] font-bold text-gray-900">{product.rating}</span>
+                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-full border border-yellow-100">
+                  <Star fill="currentColor" stroke="none" className="h-2.5 w-2.5 text-[#FBBF24]" />
+                  <span className="text-[10px] font-bold text-[#b45309]">{product.rating}</span>
                 </div>
               </div>
 
-              <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#F97316] transition-colors line-clamp-1">
+              <h3 className="text-lg font-black text-gray-900 group-hover:text-[#F97316] transition-colors leading-tight">
                 {product.name}
               </h3>
 
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-base font-black text-[#111827]">
-                    ${product.price.toFixed(2)}
+                  <span className="text-xl font-black text-[#F97316] tracking-tight">
+                    Rs. {product.price.toLocaleString()}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-xs text-gray-400 line-through font-medium">
-                      ${product.originalPrice.toFixed(2)}
+                    <span className="text-xs text-gray-400 line-through font-bold">
+                      Rs. {product.originalPrice.toLocaleString()}
                     </span>
                   )}
                 </div>
                 {product.category === 'custom' && (
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#F97316]/10 text-[#F97316]">
-                    <Wand2 size={12} className="animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-tighter">Bespoke</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F97316] text-white shadow-lg shadow-orange-500/20">
+                    <Wand2 size={10} className="animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-wider">Bespoke</span>
                   </div>
                 )}
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          )
+          }
+        </div >
+      </div >
 
       {/* Interactive Elements - Absolute Positioned with Higher Z-Index */}
       {/* Wishlist Button */}
@@ -176,14 +187,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
       </div>
 
       {/* Action Buttons */}
-      <div className="absolute bottom-[35%] right-6 flex flex-col gap-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out z-20">
+      <div className="absolute bottom-[40%] right-6 flex flex-col gap-3 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] z-20 delay-100">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link to={`/products/${product.id}`} className="block">
                 <Button
                   size="icon"
-                  className="h-10 w-10 rounded-full bg-white text-black hover:bg-[#111827] hover:text-white shadow-xl transition-all border border-gray-100"
+                  className="h-11 w-11 rounded-2xl bg-white text-[#111827] hover:bg-[#111827] hover:text-white shadow-xl transition-all border border-gray-100"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Eye size={18} />
@@ -201,7 +212,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
               <Button
                 size="icon"
                 className={cn(
-                  "h-10 w-10 rounded-full shadow-xl transition-all border-0",
+                  "h-11 w-11 rounded-2xl shadow-xl transition-all border-0",
                   product.category === 'custom'
                     ? "bg-[#F97316] text-white hover:bg-[#111827]"
                     : "bg-[#111827] text-white hover:bg-[#F97316]"
@@ -218,7 +229,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
           </Tooltip>
         </TooltipProvider>
       </div>
-    </div>
+    </div >
   );
 };
 

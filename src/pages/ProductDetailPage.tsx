@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Star, Truck, Shield, Minus, Plus, Heart, Share2, ChevronLeft, ChevronRight, Check, Palette } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Star, Truck, Shield, Minus, Plus, Heart, Share2, ChevronLeft, ChevronRight, Check, Palette, Maximize2, X, ChevronDown, Clock, Ruler, FileText, Flag, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/products/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { getProductById, products } from '@/data/mockData';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import AuthModal from '@/components/auth/AuthModal';
 import {
   Tooltip,
@@ -16,19 +17,58 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 
 import { useWishlist } from '@/context/WishlistContext';
 
 const ProductDetailPage: React.FC = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
   const product = getProductById(productId || '');
   const { addToCart } = useCart();
-  const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('reviews');
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || '');
   const [selectedColor, setSelectedColor] = useState(product?.colors[0] || '');
+  const [selectedEdge, setSelectedEdge] = useState<'Plain' | 'Stitched Edge'>('Plain');
   const [quantity, setQuantity] = useState(1);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+  const [currentReviewPage, setCurrentReviewPage] = useState(0);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('copyright');
+
+  const reviewsPerPage = 2;
+  const totalReviewPages = Math.ceil(product ? product.reviews.length / reviewsPerPage : 0);
+
+  const visibleReviews = product ? product.reviews.slice(
+    currentReviewPage * reviewsPerPage,
+    (currentReviewPage + 1) * reviewsPerPage
+  ) : [];
+
+  const handleNextReviewPage = () => {
+    if (currentReviewPage < totalReviewPages - 1) {
+      setCurrentReviewPage(prev => prev + 1);
+    }
+  };
+
+  const handlePrevReviewPage = () => {
+    if (currentReviewPage > 0) {
+      setCurrentReviewPage(prev => prev - 1);
+    }
+  };
 
   const { isWishlisted: checkWishlisted, toggleWishlist } = useWishlist();
   const isWishlisted = product ? checkWishlisted(product.id) : false;
@@ -51,7 +91,30 @@ const ProductDetailPage: React.FC = () => {
     .slice(0, 4);
 
   const handleAddToCart = () => {
-    addToCart(product, selectedSize, product?.colors[0] || { name: 'Default', value: '' }, quantity);
+    const added = addToCart(
+      product,
+      selectedSize,
+      product?.colors[0] || { name: 'Default', value: '' },
+      (product.category === 'desk-mat' || product.category === 'mousepad') ? selectedEdge : undefined,
+      quantity
+    );
+
+    if (added) {
+      toast.success(`Added ${product.name} to cart`);
+    } else {
+      toast.info(`${product.name} is already in your cart`);
+    }
+  };
+
+  const handleBuyNow = () => {
+    addToCart(
+      product,
+      selectedSize,
+      product?.colors[0] || { name: 'Default', value: '' },
+      (product.category === 'desk-mat' || product.category === 'mousepad') ? selectedEdge : undefined,
+      quantity
+    );
+    navigate('/checkout');
   };
 
   return (
@@ -79,8 +142,18 @@ const ProductDetailPage: React.FC = () => {
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-zoom-in transition-transform duration-500 hover:scale-105"
+                onClick={() => setIsImageZoomed(true)}
               />
+
+              {/* Zoom Trigger Button */}
+              <button
+                onClick={() => setIsImageZoomed(true)}
+                className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors shadow-sm"
+                aria-label="Zoom image"
+              >
+                <Maximize2 size={18} className="text-foreground" />
+              </button>
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -163,17 +236,14 @@ const ProductDetailPage: React.FC = () => {
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="font-display text-3xl font-bold text-foreground">
-                ${product.price.toFixed(2)}
+                Rs. {product.price.toLocaleString()}
               </span>
               {product.originalPrice && (
                 <span className="text-lg text-muted-foreground line-through">
-                  ${product.originalPrice.toFixed(2)}
+                  Rs. {product.originalPrice.toLocaleString()}
                 </span>
               )}
             </div>
-
-            {/* Description */}
-            <p className="text-muted-foreground">{product.description}</p>
 
 
 
@@ -186,7 +256,7 @@ const ProductDetailPage: React.FC = () => {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={cn(
-                      "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors",
+                      "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors uppercase",
                       selectedSize === size
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border hover:border-primary"
@@ -198,53 +268,190 @@ const ProductDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Quantity & Add to Cart */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border border-border rounded-lg">
-                <button
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="p-3 hover:bg-muted transition-colors rounded-l-lg"
-                >
-                  <Minus size={18} />
-                </button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(q => q + 1)}
-                  className="p-3 hover:bg-muted transition-colors rounded-r-lg"
-                >
-                  <Plus size={18} />
-                </button>
+            {/* Edge Selection - Only for deskmats and mousepads */}
+            {(product.category === 'desk-mat' || product.category === 'mousepad') && (
+              <div>
+                <h3 className="font-semibold mb-3">Edge</h3>
+                <div className="flex flex-wrap gap-3">
+                  {['Plain', 'Stitched Edge'].map((edge) => (
+                    <button
+                      key={edge}
+                      onClick={() => setSelectedEdge(edge as any)}
+                      className={cn(
+                        "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors",
+                        selectedEdge === edge
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:border-primary"
+                      )}
+                    >
+                      {edge}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Buy It Now & Add to Cart */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-border rounded-lg">
+                  <button
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="p-3 hover:bg-muted transition-colors rounded-l-lg"
+                  >
+                    <Minus size={18} />
+                  </button>
+                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(q => q + 1)}
+                    className="p-3 hover:bg-muted transition-colors rounded-r-lg"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+
+                <Button variant="outline" size="lg" className="flex-1 bg-white border-2 border-primary text-primary hover:bg-primary h-12" onClick={handleAddToCart}>
+                  Add to Cart
+                </Button>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={isWishlisted ? "default" : "outline"}
+                        size="icon"
+                        className={cn(
+                          "shrink-0 transition-all duration-300 rounded-xl h-12 w-12",
+                          isWishlisted
+                            ? "bg-[#F97316] hover:bg-[#F97316]/90 text-white border-0 shadow-[0_8px_20px_-4px_rgba(249,115,22,0.4)]"
+                            : "hover:text-[#F97316] hover:border-[#F97316]/30"
+                        )}
+                        onClick={() => product && toggleWishlist(product.id)}
+                      >
+                        <Heart
+                          size={22}
+                          className={cn("transition-colors duration-300", isWishlisted ? "fill-white" : "fill-none")}
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-[#111827] text-white border-0 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-xl translate-y-[-8px]">
+                      {isWishlisted ? "Saved to wishlist" : "Add to wishlist"}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
 
-              <Button variant="hero" size="lg" className="flex-1" onClick={handleAddToCart}>
-                Add to Cart — ${(product.price * quantity).toFixed(2)}
+              <Button variant="hero" size="xl" className="w-full text-lg font-bold shadow-xl shadow-primary/20" onClick={handleBuyNow}>
+                Buy It Now — Rs. {(product.price * quantity).toLocaleString()}
               </Button>
+            </div>
 
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={isWishlisted ? "default" : "outline"}
-                      size="icon"
+            {/* Product Details Accordions */}
+            <div className="pt-6 border-t border-gray-100 space-y-2">
+              {[
+                {
+                  id: 'desc',
+                  title: 'Description',
+                  icon: FileText,
+                  content: (
+                    <div className="space-y-4 text-sm text-gray-500 leading-relaxed">
+                      <p>{product.description}</p>
+                      <p>Meticulously engineered for the modern desk environment. We combine artisan aesthetics with industrial-grade durability.</p>
+                      <ul className="list-disc pl-4 space-y-1">
+                        <li>High-definition printing</li>
+                        <li>Non-slip rubber base</li>
+                        <li>Water-resistant surface</li>
+                        <li>Premium {product.material}</li>
+                      </ul>
+                    </div>
+                  )
+                },
+                {
+                  id: 'size',
+                  title: 'Size Guide',
+                  icon: Ruler,
+                  content: (
+                    <div className="space-y-4 text-sm text-gray-500">
+                      <p>Available sizes for this product:</p>
+                      <div className="grid grid-cols-1 gap-2">
+                        {product.sizes.map(size => (
+                          <div key={size} className="flex justify-between p-2 bg-gray-50 rounded-lg">
+                            <span className="font-bold text-gray-700">{size.split(' ')[0]}</span>
+                            <span>{size.includes('(') ? size.split('(')[1].replace(')', '') : size}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[10px] uppercase tracking-wider italic text-gray-400">All dimensions are approximate.</p>
+                    </div>
+                  )
+                },
+                {
+                  id: 'delivery',
+                  title: 'Expected Delivery Time',
+                  icon: Clock,
+                  content: (
+                    <div className="space-y-3 text-sm text-gray-500">
+                      <div className="flex items-start gap-3 p-3 bg-[#F97316]/5 rounded-xl border border-[#F97316]/10">
+                        <Truck size={18} className="text-[#F97316] shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-gray-800">Inside Kathmandu Valley</p>
+                          <p>2 - 3 Business Days</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <Clock size={18} className="text-gray-400 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-gray-800">Outside Kathmandu Valley</p>
+                          <p>4 - 7 Business Days</p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+              ].map((item) => (
+                <div key={item.id} className="border-b border-gray-50 last:border-0 overflow-hidden">
+                  <button
+                    onClick={() => setOpenAccordion(openAccordion === item.id ? null : item.id)}
+                    className="w-full py-4 flex items-center justify-between text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                        openAccordion === item.id ? "bg-[#F97316]/10 text-[#F97316]" : "bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-gray-600"
+                      )}>
+                        <item.icon size={16} />
+                      </div>
+                      <span className={cn(
+                        "font-bold text-sm tracking-wide transition-colors",
+                        openAccordion === item.id ? "text-gray-900" : "text-gray-500 group-hover:text-gray-700"
+                      )}>
+                        {item.title}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      size={18}
                       className={cn(
-                        "shrink-0 transition-all duration-300 rounded-xl h-12 w-12",
-                        isWishlisted
-                          ? "bg-[#F97316] hover:bg-[#F97316]/90 text-white border-0 shadow-[0_8px_20px_-4px_rgba(249,115,22,0.4)]"
-                          : "hover:text-[#F97316] hover:border-[#F97316]/30"
+                        "text-gray-300 transition-transform duration-300",
+                        openAccordion === item.id && "rotate-180 text-[#F97316]"
                       )}
-                      onClick={() => product && toggleWishlist(product.id)}
-                    >
-                      <Heart
-                        size={22}
-                        className={cn("transition-colors duration-300", isWishlisted ? "fill-white" : "fill-none")}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-[#111827] text-white border-0 font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-xl translate-y-[-8px]">
-                    {isWishlisted ? "Saved to wishlist" : "Add to wishlist"}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {openAccordion === item.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      >
+                        <div className="pb-6 pt-2">
+                          {item.content}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
             </div>
 
             {/* Premium Trust Badges */}
@@ -255,7 +462,7 @@ const ProductDetailPage: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#F97316]/60">Fast Delivery</span>
-                  <span className="text-sm font-bold text-[#111827]">Free over Rs. 75</span>
+                  <span className="text-sm font-bold text-[#111827]">Free over Rs. 1,500</span>
                 </div>
               </div>
 
@@ -280,6 +487,17 @@ const ProductDetailPage: React.FC = () => {
                 <Link to="/custom-design">Customize</Link>
               </Button>
             </div>
+
+            {/* Report Button */}
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="flex items-center gap-2 text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <Flag size={14} />
+                Report this design
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -289,18 +507,6 @@ const ProductDetailPage: React.FC = () => {
         <div className="flex flex-col gap-12">
           {/* Tab Navigation */}
           <div className="flex border-b border-gray-100">
-            <button
-              onClick={() => setActiveTab('description')}
-              className={cn(
-                "px-8 py-5 font-black text-[10px] uppercase tracking-[0.3em] transition-all relative",
-                activeTab === 'description' ? "text-[#111827]" : "text-gray-400 hover:text-[#111827]"
-              )}
-            >
-              Description.
-              {activeTab === 'description' && (
-                <motion.div layoutId="tabLine" className="absolute bottom-0 left-0 w-full h-[3px] bg-[#F97316]" />
-              )}
-            </button>
             <button
               onClick={() => setActiveTab('reviews')}
               className={cn(
@@ -317,39 +523,7 @@ const ProductDetailPage: React.FC = () => {
 
           <div className="min-h-[300px]">
             <AnimatePresence mode="wait">
-              {activeTab === 'description' ? (
-                <motion.div
-                  key="description"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="max-w-3xl space-y-8"
-                >
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-black text-[#111827]">Built for Perfection.</h3>
-                    <p className="text-gray-500 leading-relaxed text-lg">
-                      {product.description} Every {product.name} is meticulously engineered for the modern desk environment. We combine artisan aesthetics with industrial-grade durability.
-                    </p>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-8">
-                    <div className="p-8 rounded-[2rem] bg-gray-50/50 border border-gray-100 space-y-4">
-                      <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-[#F97316] shadow-sm">
-                        <Palette size={18} />
-                      </div>
-                      <h4 className="font-black text-sm uppercase tracking-widest text-[#111827]">Vibrant Finishes</h4>
-                      <p className="text-sm text-gray-500 leading-relaxed">High-definition printing techniques ensure that every color pop and deep dark is rendered with absolute precision.</p>
-                    </div>
-                    <div className="p-8 rounded-[2rem] bg-gray-50/50 border border-gray-100 space-y-4">
-                      <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-[#F97316] shadow-sm">
-                        <Truck size={18} />
-                      </div>
-                      <h4 className="font-black text-sm uppercase tracking-widest text-[#111827]">Swift Stash</h4>
-                      <p className="text-sm text-gray-500 leading-relaxed">Packaged in sustainable, reinforced tubes to ensure your new workspace upgrade arrives in pristine condition.</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
+              {activeTab === 'reviews' && (
                 <motion.div
                   key="reviews"
                   initial={{ opacity: 0, y: 10 }}
@@ -386,7 +560,7 @@ const ProductDetailPage: React.FC = () => {
 
                   {/* Reviews List */}
                   <div className="grid md:grid-cols-2 gap-8">
-                    {product.reviews.map((review) => (
+                    {visibleReviews.map((review) => (
                       <motion.div
                         key={review.id}
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -423,6 +597,29 @@ const ProductDetailPage: React.FC = () => {
                       </motion.div>
                     ))}
                   </div>
+
+                  {/* Pagination Controls */}
+                  {totalReviewPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 pt-4">
+                      <button
+                        onClick={handlePrevReviewPage}
+                        disabled={currentReviewPage === 0}
+                        className="p-3 rounded-full bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F97316] hover:text-white transition-all"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+                      <span className="text-sm font-bold text-gray-500">
+                        Page {currentReviewPage + 1} of {totalReviewPages}
+                      </span>
+                      <button
+                        onClick={handleNextReviewPage}
+                        disabled={currentReviewPage === totalReviewPages - 1}
+                        className="p-3 rounded-full bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#F97316] hover:text-white transition-all"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -445,10 +642,122 @@ const ProductDetailPage: React.FC = () => {
           </div>
         </section>
       )}
+      {/* Image Zoom Lightbox */}
+      <AnimatePresence>
+        {isImageZoomed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-12 mb-0"
+            onClick={() => setIsImageZoomed(false)}
+          >
+            {/* Close Button */}
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-[110]"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsImageZoomed(false);
+              }}
+            >
+              <X size={24} />
+            </motion.button>
+
+            {/* Navigation Arrows in Zoom Mode */}
+            {product.images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImage(i => i === 0 ? product.images.length - 1 : i - 1);
+                  }}
+                  className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-[110]"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImage(i => i === product.images.length - 1 ? 0 : i + 1);
+                  }}
+                  className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-[110]"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
+            )}
+
+            {/* Zoomed Image Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={product.images[selectedImage]}
+                alt={product.name}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              />
+              {/* Image Counter */}
+              <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-white/80 text-sm font-bold tracking-widest uppercase">
+                {selectedImage + 1} / {product.images.length}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+
+      {/* Report Modal */}
+      <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="w-5 h-5" />
+              Report this Design
+            </DialogTitle>
+            <DialogDescription>
+              Help us keep The Desk Tales safe. Reports are anonymous.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <RadioGroup defaultValue="copyright" onValueChange={setReportReason} className="gap-3">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="copyright" id="r1" />
+                <Label htmlFor="r1">Copyright Infringement</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="inappropriate" id="r2" />
+                <Label htmlFor="r2">Inappropriate Content</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="quality" id="r3" />
+                <Label htmlFor="r3">Low Quality / Misleading</Label>
+              </div>
+            </RadioGroup>
+            <div className="grid gap-2">
+              <Label htmlFor="details">Additional Details (Optional)</Label>
+              <Textarea id="details" placeholder="Please provide more context..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsReportModalOpen(false)} className="hover:text-gray-900 hover:bg-gray-100">Cancel</Button>
+            <Button variant="destructive" onClick={() => {
+              // Mock submit
+              setIsReportModalOpen(false);
+            }}>Submit Report</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

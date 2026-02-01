@@ -40,7 +40,7 @@ function formatDate(dateString: string) {
 }
 
 function formatCurrency(amount: number) {
-  return `$${amount.toFixed(2)}`;
+  return `Rs. ${amount.toLocaleString()}`;
 }
 
 export function SalesTable({ sales }: SalesTableProps) {

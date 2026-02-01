@@ -2,6 +2,8 @@ import mousepadsImg from '../assets/mousepads.png';
 import deskmatsImg from '../assets/deskmats.png';
 import postersImg from '../assets/posters.png';
 import customDeskmatImg from '../assets/custom-deskmat.png';
+import mousepadImg from '../assets/mousepad.png';
+import customPosterImg from '../assets/custom-poster.png';
 
 // Mock Data for The Desk Tales eCommerce
 
@@ -137,11 +139,11 @@ export const products: Product[] = [
     id: 'p-custom',
     name: 'Custom Deskmat',
     category: 'custom',
-    price: 89.99,
+    price: 3299,
     image: customDeskmatImg,
     images: [customDeskmatImg],
     description: 'Our premium "Build Your Own" experience. Upload your high-resolution artwork or use our design studio to create a one-of-a-kind workspace centerpiece.',
-    sizes: ['Small (60x30cm)', 'Medium (80x40cm)', 'Large (120x60cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [
       { name: 'Custom Design', value: '#F97316' },
     ],
@@ -156,15 +158,59 @@ export const products: Product[] = [
     limited: false,
   },
   {
+    id: 'p-custom-mousepad',
+    name: 'Custom Mousepad',
+    category: 'custom',
+    price: 899,
+    image: mousepadImg,
+    images: [mousepadImg],
+    description: 'Design your own professional-grade mousepad. Perfect for gaming or office use, with your own personal touch.',
+    sizes: ['Standard (32x27cm)', 'Large (45x40cm)'],
+    colors: [
+      { name: 'Custom Design', value: '#F97316' },
+    ],
+    rating: 4.8,
+    reviewCount: 86,
+    reviews: [],
+    inStock: true,
+    material: 'Smooth Cloth Surface + Non-Slip Rubber Base',
+    bestseller: false,
+    newArrival: true,
+    limited: false,
+  },
+  {
+    id: 'p-custom-poster',
+    name: 'Custom Framed Poster',
+    category: 'custom',
+    price: 1499,
+    image: customPosterImg,
+    images: [customPosterImg],
+    description: 'Transform your favorite memories or digital art into gallery-quality framed posters. Printed on premium matte paper with a sleek, modern frame.',
+    sizes: ['12x18"', '18x24"', '24x36"'],
+    colors: [
+      { name: 'Black Frame', value: '#000000' },
+      { name: 'White Frame', value: '#FFFFFF' },
+      { name: 'Oak Frame', value: '#D2B48C' },
+    ],
+    rating: 4.9,
+    reviewCount: 42,
+    reviews: [],
+    inStock: true,
+    material: '200gsm Museum-Quality Matte Paper + Lightweight Wood Frame',
+    bestseller: false,
+    newArrival: true,
+    limited: false,
+  },
+  {
     id: 'p1',
     name: 'Midnight Geometry DeskMat',
     category: 'desk-mat',
-    price: 79.99,
-    originalPrice: 99.99,
+    price: 2499,
+    originalPrice: 2999,
     image: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800',
     images: ['https://images.unsplash.com/photo-1550684400-0196726f8cc1?auto=format&fit=crop&q=80&w=800', 'https://images.unsplash.com/photo-1550684847-75bdda21cc95?auto=format&fit=crop&q=80&w=800'],
     description: 'Transform your workspace with this stunning geometric pattern featuring deep blues and subtle gold accents. Premium microfiber surface provides smooth mouse tracking.',
-    sizes: ['Small (60x30cm)', 'Medium (80x40cm)', 'Large (120x60cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [
       { name: 'Midnight Blue', value: '#1E3A8A' },
       { name: 'Charcoal', value: '#374151' },
@@ -193,6 +239,38 @@ export const products: Product[] = [
         rating: 4,
         date: 'Dec 22, 2023',
         comment: 'Great quality and colors. It stays perfectly in place on my desk. Just wish it arrived a bit sooner.'
+      },
+      {
+        id: 'r3',
+        userName: 'Saman Thapa',
+        userAvatar: 'https://i.pravatar.cc/150?u=saman',
+        rating: 5,
+        date: 'Feb 10, 2024',
+        comment: 'The stitching is perfect. Best deskmat I have ever owned. High quality and feels premium.'
+      },
+      {
+        id: 'r4',
+        userName: 'Priya Rai',
+        userAvatar: 'https://i.pravatar.cc/150?u=priya',
+        rating: 5,
+        date: 'Feb 14, 2024',
+        comment: 'Vibrant colors and great texture. My desk setup looks amazing now!'
+      },
+      {
+        id: 'r5',
+        userName: 'Anish Giri',
+        userAvatar: 'https://i.pravatar.cc/150?u=anish',
+        rating: 4,
+        date: 'Jan 30, 2024',
+        comment: 'Good value for money. The surface is easy to clean.'
+      },
+      {
+        id: 'r6',
+        userName: 'Sunita KC',
+        userAvatar: 'https://i.pravatar.cc/150?u=sunita',
+        rating: 5,
+        date: 'Jan 05, 2024',
+        comment: 'Love the minimalist packaging and the product itself is top-notch.'
       }
     ]
   },
@@ -200,11 +278,11 @@ export const products: Product[] = [
     id: 'p2',
     name: 'Sunset Gradient DeskMat',
     category: 'desk-mat',
-    price: 49.99,
+    price: 1899,
     image: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=800',
     images: ['https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=800', 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?auto=format&fit=crop&q=80&w=800'],
     description: 'A beautiful gradient design that transitions from warm sunset oranges to deep purple twilight. Perfect for creative professionals.',
-    sizes: ['Standard (40x30cm)', 'Wide (50x35cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [
       { name: 'Sunset', value: '#F59E0B' },
       { name: 'Ocean', value: '#0EA5E9' },
@@ -231,7 +309,7 @@ export const products: Product[] = [
     id: 'p3',
     name: 'Neon Circuit Gaming Mousepad',
     category: 'mousepad',
-    price: 34.99,
+    price: 999,
     image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800',
     images: ['https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800'],
     description: 'High-performance gaming surface with futuristic circuit board design. Optimized for both optical and laser mice.',
@@ -271,11 +349,11 @@ export const products: Product[] = [
     id: 'p4',
     name: 'Botanical Garden DeskMat',
     category: 'desk-mat',
-    price: 89.99,
+    price: 2899,
     image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=800',
     images: ['https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=800'],
     description: 'Hand-illustrated botanical patterns bring a touch of nature to your desk. Features delicate leaves and flowers on a cream background.',
-    sizes: ['Medium (80x40cm)', 'Large (120x60cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [
       { name: 'Cream', value: '#FEF3C7' },
       { name: 'Sage', value: '#D1FAE5' },
@@ -300,7 +378,7 @@ export const products: Product[] = [
     id: 'p5',
     name: 'Minimalist Grid Mousepad',
     category: 'mousepad',
-    price: 29.99,
+    price: 699,
     image: 'https://images.unsplash.com/photo-1506784926709-b2f9c216faab?auto=format&fit=crop&q=80&w=800',
     images: ['https://images.unsplash.com/photo-1506784926709-b2f9c216faab?auto=format&fit=crop&q=80&w=800'],
     description: 'Clean, understated design with a subtle grid pattern. Perfect for professionals who appreciate simplicity.',
@@ -315,22 +393,13 @@ export const products: Product[] = [
     rating: 4.6,
     reviewCount: 145,
     inStock: true,
-    reviews: [
-      {
-        id: 'r7',
-        userName: 'Thomas Lee',
-        userAvatar: 'https://i.pravatar.cc/150?u=thomas',
-        rating: 4,
-        date: 'Feb 18, 2024',
-        comment: 'Does exactly what it says. Very clean look, fits my minimalist setup perfectly.'
-      }
-    ]
+    reviews: []
   },
   {
     id: 'p6',
     name: 'Waves of Ocean Poster',
     category: 'poster',
-    price: 24.99,
+    price: 899,
     image: 'https://images.unsplash.com/photo-1515404929826-76fff9fef6fe?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1515404929826-76fff9fef6fe?q=80&w=800&auto=format&fit=crop'],
     description: 'High-quality matte art print featuring calming ocean waves.',
@@ -342,22 +411,13 @@ export const products: Product[] = [
     reviewCount: 45,
     inStock: true,
     newArrival: true,
-    reviews: [
-      {
-        id: 'r8',
-        userName: 'Chloe Evans',
-        userAvatar: 'https://i.pravatar.cc/150?u=chloe',
-        rating: 5,
-        date: 'Apr 05, 2024',
-        comment: 'The print quality is outstanding. The colors are deep and the paper is thick and professional.'
-      }
-    ]
+    reviews: []
   },
   {
     id: 'p7',
-    name: 'Abstract Abstract Poster',
+    name: 'Abstract Modern Poster',
     category: 'poster',
-    price: 29.99,
+    price: 1299,
     image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop'],
     description: 'Modern abstract art print for contemporary spaces.',
@@ -368,80 +428,51 @@ export const products: Product[] = [
     rating: 4.7,
     reviewCount: 23,
     inStock: true,
-    reviews: [
-      {
-        id: 'r9',
-        userName: 'James Wilson',
-        userAvatar: 'https://i.pravatar.cc/150?u=james',
-        rating: 5,
-        date: 'Mar 28, 2024',
-        comment: 'Really adds a pop of modern art to my room. The texture of the canvas is beautiful.'
-      }
-    ]
+    reviews: []
   },
   {
     id: 'p8',
     name: 'Cyberpunk City DeskMat',
     category: 'desk-mat',
-    price: 59.99,
+    price: 2199,
     image: 'https://images.unsplash.com/photo-1555679427-1f6dfcce943b?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1555679427-1f6dfcce943b?q=80&w=800&auto=format&fit=crop'],
     description: 'Immerse yourself in a neon-drenched cityscape. High-precision surface for gaming and productivity.',
-    sizes: ['Large (90x40cm)', 'XL (120x60cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [{ name: 'Neon', value: '#db2777' }],
     material: 'Waterproof Hybrid Surface',
     designer: designers[2],
-    rating: 4.9,
-    reviewCount: 67,
+    rating: 4.8,
+    reviewCount: 342,
     inStock: true,
-    bestseller: true,
-    reviews: [
-      {
-        id: 'r10',
-        userName: 'Ryan Porter',
-        userAvatar: 'https://i.pravatar.cc/150?u=ryan',
-        rating: 5,
-        date: 'Feb 12, 2024',
-        comment: 'The detail in the print is incredible. Truly feels like a piece of high-tech art on my desk.'
-      }
-    ]
+    reviews: []
   },
   {
     id: 'p9',
-    name: 'Retro Wave Mousepad',
-    category: 'mousepad',
-    price: 39.99,
-    image: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop',
-    images: ['https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop'],
-    description: '80s inspired retro wave aesthetics for your desk setup.',
-    sizes: ['Standard (32x27cm)'],
-    colors: [{ name: 'Purple', value: '#9333ea' }],
-    material: 'Vibrant Lycra Cloth',
-    designer: designers[1],
-    rating: 4.8,
-    reviewCount: 42,
+    name: 'Vintage Cartography DeskMat',
+    category: 'desk-mat',
+    price: 2799,
+    image: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6?q=80&w=800&auto=format&fit=crop',
+    images: ['https://images.unsplash.com/photo-1589118949245-7d38baf380d6?q=80&w=800&auto=format&fit=crop'],
+    description: 'Detailed vintage map design for the explorer at heart. Premium stitching and classic aesthetic.',
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
+    colors: [{ name: 'Sepia', value: '#78350f' }],
+    material: 'Premium Microfiber',
+    designer: designers[0],
+    rating: 4.9,
+    reviewCount: 95,
     inStock: true,
-    bestseller: true,
-    reviews: [
-      {
-        id: 'r11',
-        userName: 'Jessica Moore',
-        userAvatar: 'https://i.pravatar.cc/150?u=jessica',
-        rating: 5,
-        date: 'Apr 10, 2024',
-        comment: 'Vivid colors and perfect size for my limited desk space. Love the retro vibe!'
-      }
-    ]
+    reviews: []
   },
   {
     id: 'p10',
     name: 'Astro Nebula DeskMat',
     category: 'desk-mat',
-    price: 84.99,
+    price: 2699,
     image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format&fit=crop'],
     description: 'A breathtaking deep space nebula design. Premium micro-woven surface for peak performance and aesthetics.',
-    sizes: ['Medium (80x40cm)', 'Large (90x40cm)', 'XL (120x60cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [{ name: 'Cosmic', value: '#1e1b4b' }],
     material: 'High-Density Micro-Woven Cloth',
     designer: designers[2],
@@ -455,7 +486,7 @@ export const products: Product[] = [
     id: 'p11',
     name: 'Zen Garden Mousepad',
     category: 'mousepad',
-    price: 24.99,
+    price: 599,
     image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=800&auto=format&fit=crop'],
     description: 'Minimalist sand patterns inspired by Japanese Zen gardens. Provides a calm and focused atmosphere for your workspace.',
@@ -473,7 +504,7 @@ export const products: Product[] = [
     id: 'p12',
     name: 'Cyberpunk Oni Poster',
     category: 'poster',
-    price: 34.99,
+    price: 1599,
     image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop'],
     description: 'A striking fusion of traditional Japanese Oni motifs and cyberpunk aesthetics. High-quality velvet matte finish.',
@@ -490,11 +521,11 @@ export const products: Product[] = [
     id: 'p13',
     name: 'Pastel Dreams DeskMat',
     category: 'desk-mat',
-    price: 69.99,
+    price: 2399,
     image: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=800&auto=format&fit=crop'],
     description: 'Soft pastel gradients that bring a dreamlike quality to your setup. Water-resistant and easy to clean.',
-    sizes: ['Medium (80x40cm)', 'Large (90x40cm)'],
+    sizes: ['MEDIUM (28CM X 60CM)', 'LARGE (30CM X 82CM)', 'EXTRA LARGE (42CM X 90CM)'],
     colors: [{ name: 'Cloud', value: '#bae6fd' }],
     material: 'Spill-Resistant Hybrid Surface',
     designer: designers[1],

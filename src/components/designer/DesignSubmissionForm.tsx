@@ -64,17 +64,17 @@ export function DesignSubmissionForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.category || !formData.file) {
       toast.error('Please fill in all required fields');
       return;
     }
 
     setIsSubmitting(true);
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     toast.success('Design submitted successfully! We\'ll review it within 48 hours.');
     setOpen(false);
     setFormData({ name: '', category: '', description: '', tags: '', file: null });
@@ -90,7 +90,7 @@ export function DesignSubmissionForm() {
           Submit New Design
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Submit a New Design</DialogTitle>
           <DialogDescription>
@@ -118,10 +118,9 @@ export function DesignSubmissionForm() {
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desktop-mat">Desktop Mat</SelectItem>
-                <SelectItem value="laptop-mat">Laptop Mat</SelectItem>
-                <SelectItem value="mousepad">Mousepad</SelectItem>
-                <SelectItem value="accessory">Accessory</SelectItem>
+                <SelectItem value="desk-mat">DeskMats</SelectItem>
+                <SelectItem value="mousepad">Mousepads</SelectItem>
+                <SelectItem value="poster">Posters</SelectItem>
               </SelectContent>
             </Select>
           </div>

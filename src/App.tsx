@@ -9,6 +9,12 @@ import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CustomDesignPage from "./pages/CustomDesignPage";
 import DesignerDashboardPage from "./pages/DesignerDashboardPage";
+import DesignerApplyPage from "./pages/DesignerApplyPage";
+import DesignerAssetsPage from "./pages/DesignerAssetsPage";
+import DMCA from "./pages/legal/DMCA";
+import TermsOfService from "./pages/legal/TermsOfService";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 import NotFound from "./pages/NotFound";
 
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -32,6 +38,12 @@ const App = () => (
               <Route path="/products/:productId" element={<ProductDetailPage />} />
               <Route path="/custom-design" element={<CustomDesignPage />} />
               <Route path="/designer" element={<DesignerDashboardPage />} />
+              <Route path="/designer/assets" element={<DesignerAssetsPage />} />
+              <Route path="/designer-apply" element={<DesignerApplyPage />} />
+              <Route path="/dmca" element={<DMCA />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/order-success" element={<OrderSuccessPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

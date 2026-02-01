@@ -23,6 +23,8 @@ const ProductsPage: React.FC = () => {
     useEffect(() => {
         if (categoryParam) {
             setSelectedCategories([categoryParam]);
+        } else {
+            setSelectedCategories([]);
         }
     }, [categoryParam]);
 
@@ -60,19 +62,36 @@ const ProductsPage: React.FC = () => {
     const filteredProducts = useMemo(() => {
         let result = products.filter(product => {
             const matchesCategory = selectedCategories.length === 0 ||
-                selectedCategories.includes(product.category);
+                selectedCategories.includes(product.category) ||
+                (selectedCategories.includes('desk-mat') && product.id === 'p-custom') ||
+                (selectedCategories.includes('mousepad') && product.id === 'p-custom-mousepad') ||
+                (selectedCategories.includes('poster') && product.id === 'p-custom-poster');
 
             let matchesPrice = true;
             if (selectedPriceRange) {
-                if (selectedPriceRange === '$0 - $25') matchesPrice = product.price < 25;
-                else if (selectedPriceRange === '$25 - $50') matchesPrice = product.price >= 25 && product.price <= 50;
-                else if (selectedPriceRange === '$50+') matchesPrice = product.price > 50;
+                if (selectedPriceRange === 'Rs. 0 - Rs. 1000') matchesPrice = product.price <= 1000;
+                else if (selectedPriceRange === 'Rs. 1000 - Rs. 2000') matchesPrice = product.price > 1000 && product.price <= 2000;
+                else if (selectedPriceRange === 'Rs. 2000 - Rs. 3000') matchesPrice = product.price > 2000 && product.price <= 3000;
+                else if (selectedPriceRange === 'Rs. 3000+') matchesPrice = product.price > 3000;
             }
 
             return matchesCategory && matchesPrice;
         });
 
-        if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
+        if (sortBy === 'featured') {
+            result.sort((a, b) => {
+                const getPriority = (p: any) => {
+                    if (p.id === 'p-custom') return 0;
+                    if (p.category === 'desk-mat') return 1;
+                    if (p.id === 'p-custom-mousepad') return 2;
+                    if (p.category === 'mousepad') return 3;
+                    if (p.id === 'p-custom-poster') return 4;
+                    if (p.category === 'poster') return 5;
+                    return 6;
+                };
+                return getPriority(a) - getPriority(b);
+            });
+        } else if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
         else if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
         else if (sortBy === 'newest') result.sort((a, b) => (b.newArrival ? 1 : 0) - (a.newArrival ? 1 : 0));
 
@@ -207,7 +226,7 @@ const ProductsPage: React.FC = () => {
                                         PRICE RANGE
                                     </h3>
                                     <div className="space-y-4">
-                                        {['$0 - $25', '$25 - $50', '$50+'].map((range) => (
+                                        {['Rs. 0 - Rs. 1000', 'Rs. 1000 - Rs. 2000', 'Rs. 2000 - Rs. 3000', 'Rs. 3000+'].map((range) => (
                                             <button
                                                 key={range}
                                                 onClick={() => handlePriceRangeChange(range)}
@@ -294,7 +313,7 @@ const ProductsPage: React.FC = () => {
                                 <>
                                     <motion.div
                                         layout
-                                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10"
+                                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10"
                                     >
                                         <AnimatePresence mode='popLayout'>
                                             {filteredProducts.slice(0, visibleItems).map((product, index) => (
@@ -315,7 +334,7 @@ const ProductsPage: React.FC = () => {
                                                             ease: [0.215, 0.61, 0.355, 1]
                                                         }}
                                                     >
-                                                        <ProductCard product={product} variant="minimal" />
+                                                        <ProductCard product={product} variant="default" />
                                                     </motion.div>
                                                 </React.Fragment>
                                             ))}

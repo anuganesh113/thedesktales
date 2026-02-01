@@ -54,7 +54,7 @@ const CartDrawer: React.FC = () => {
               <ul className="space-y-4">
                 {items.map((item) => (
                   <li
-                    key={`${item.product.id}-${item.selectedSize}-${item.selectedColor.name}`}
+                    key={`${item.product.id}-${item.selectedSize}-${item.selectedColor.name}-${item.selectedEdge || 'none'}`}
                     className="flex gap-4 p-3 bg-muted/50 rounded-lg animate-fade-in"
                   >
                     <div className="w-20 h-20 bg-muted rounded-md overflow-hidden shrink-0">
@@ -74,29 +74,35 @@ const CartDrawer: React.FC = () => {
                         <span>{item.selectedColor.name}</span>
                         <span>•</span>
                         <span>{item.selectedSize.split(' ')[0]}</span>
+                        {item.selectedEdge && (
+                          <>
+                            <span>•</span>
+                            <span>{item.selectedEdge}</span>
+                          </>
+                        )}
                       </div>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-1 bg-background rounded-md border border-border">
                           <button
                             className="p-1.5 hover:bg-muted transition-colors rounded-l-md"
-                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity - 1)}
                           >
                             <Minus size={14} />
                           </button>
                           <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                           <button
                             className="p-1.5 hover:bg-muted transition-colors rounded-r-md"
-                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity + 1)}
                           >
                             <Plus size={14} />
                           </button>
                         </div>
-                        <span className="font-semibold">Rs. {(item.product.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-semibold">Rs. {(item.product.price * item.quantity).toLocaleString()}</span>
                       </div>
                     </div>
                     <button
                       className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                      onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor.name)}
+                      onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge)}
                     >
                       <Trash2 size={18} />
                     </button>
@@ -112,15 +118,15 @@ const CartDrawer: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>Rs. {totalPrice.toFixed(2)}</span>
+                  <span>Rs. {totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>{totalPrice >= 75 ? 'Free' : 'Rs. 7.99'}</span>
+                  <span>{totalPrice >= 1500 ? 'Free' : 'Rs. 150'}</span>
                 </div>
                 <div className="flex justify-between font-display font-bold text-lg pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>Rs. {(totalPrice + (totalPrice >= 75 ? 0 : 7.99)).toFixed(2)}</span>
+                  <span>Rs. {(totalPrice + (totalPrice >= 1500 ? 0 : 150)).toLocaleString()}</span>
                 </div>
               </div>
               <Button variant="hero" size="lg" className="w-full" asChild>

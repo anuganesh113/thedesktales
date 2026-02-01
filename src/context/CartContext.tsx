@@ -6,13 +6,14 @@ export interface CartItem {
   quantity: number;
   selectedSize: string;
   selectedColor: { name: string; value: string };
+  selectedEdge?: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, size: string, color: { name: string; value: string }, quantity?: number) => void;
-  removeFromCart: (productId: string, size: string, colorName: string) => void;
-  updateQuantity: (productId: string, size: string, colorName: string, quantity: number) => void;
+  addToCart: (product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity?: number) => boolean;
+  removeFromCart: (productId: string, size: string, colorName: string, edge?: string) => void;
+  updateQuantity: (productId: string, size: string, colorName: string, edge: string | undefined, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -26,40 +27,49 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = useCallback((product: Product, size: string, color: { name: string; value: string }, quantity = 1) => {
-    setItems(prevItems => {
-      const existingIndex = prevItems.findIndex(
-        item => item.product.id === product.id && item.selectedSize === size && item.selectedColor.name === color.name
-      );
+  const addToCart = useCallback((product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity = 1) => {
+    const existingIndex = items.findIndex(
+      item => item.product.id === product.id &&
+        item.selectedSize === size &&
+        item.selectedColor.name === color.name &&
+        item.selectedEdge === edge
+    );
 
-      if (existingIndex > -1) {
-        const updated = [...prevItems];
-        updated[existingIndex].quantity += quantity;
-        return updated;
-      }
+    if (existingIndex > -1) {
+      return false;
+    }
 
-      return [...prevItems, { product, quantity, selectedSize: size, selectedColor: color }];
-    });
+    setItems(prevItems => [
+      ...prevItems,
+      { product, quantity, selectedSize: size, selectedColor: color, selectedEdge: edge }
+    ]);
     setIsCartOpen(true);
-  }, []);
+    return true;
+  }, [items]);
 
-  const removeFromCart = useCallback((productId: string, size: string, colorName: string) => {
-    setItems(prevItems => 
+  const removeFromCart = useCallback((productId: string, size: string, colorName: string, edge?: string) => {
+    setItems(prevItems =>
       prevItems.filter(
-        item => !(item.product.id === productId && item.selectedSize === size && item.selectedColor.name === colorName)
+        item => !(item.product.id === productId &&
+          item.selectedSize === size &&
+          item.selectedColor.name === colorName &&
+          item.selectedEdge === edge)
       )
     );
   }, []);
 
-  const updateQuantity = useCallback((productId: string, size: string, colorName: string, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, size: string, colorName: string, edge: string | undefined, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId, size, colorName);
+      removeFromCart(productId, size, colorName, edge);
       return;
     }
 
-    setItems(prevItems => 
-      prevItems.map(item => 
-        item.product.id === productId && item.selectedSize === size && item.selectedColor.name === colorName
+    setItems(prevItems =>
+      prevItems.map(item =>
+        item.product.id === productId &&
+          item.selectedSize === size &&
+          item.selectedColor.name === colorName &&
+          item.selectedEdge === edge
           ? { ...item, quantity }
           : item
       )

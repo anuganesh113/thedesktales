@@ -17,7 +17,7 @@ interface DesignerControlsProps {
         scale: number;
         rotation: number;
         image: string | null;
-        quality: 'good' | 'fair' | 'poor' | null;
+        quality: 'excellent' | 'good' | 'fair' | 'poor' | null;
     };
     selectedSize: { width: number; height: number; name: string; price: number };
     onSizeChange: (sizeId: string) => void;

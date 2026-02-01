@@ -65,9 +65,12 @@ const Footer: React.FC = () => {
               {[
                 { name: 'About Us', href: '/about' },
                 { name: 'Our Story', href: '/story' },
+                { name: 'Become a Designer', href: '/designer-apply' },
                 { name: 'Designers', href: '/designers' },
                 { name: 'Careers', href: '/careers' },
-                { name: 'Affiliates', href: '/affiliates' }
+                { name: 'Affiliates', href: '/affiliates' },
+                { name: 'Terms of Service', href: '/terms' },
+                { name: 'DMCA Policy', href: '/dmca' }
               ].map((link) => (
                 <li key={link.name}>
                   <Link to={link.href} className="text-white/50 hover:text-white transition-colors text-sm font-medium">

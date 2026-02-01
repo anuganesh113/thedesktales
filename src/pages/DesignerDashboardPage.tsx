@@ -5,9 +5,13 @@ import { DesignsList } from '@/components/designer/DesignsList';
 import { SalesTable } from '@/components/designer/SalesTable';
 import { EarningsChart } from '@/components/designer/EarningsChart';
 import { NotificationsList } from '@/components/designer/NotificationsList';
+import { DesignerSettingsForm } from '@/components/designer/DesignerSettingsForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import {
   mockDesignSubmissions,
   mockSalesRecords,
@@ -32,31 +36,52 @@ export default function DesignerDashboardPage() {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-2 border-primary/20">
-                <AvatarImage src={currentDesigner.avatar} alt={currentDesigner.name} />
-                <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                  {currentDesigner.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Welcome back, {currentDesigner.name.split(' ')[0]}
-                  </h1>
+          {/* Premium Header Section */}
+          <div className="relative overflow-hidden rounded-3xl bg-[#111827] text-white p-8 md:p-12 mb-10 shadow-2xl shadow-gray-200">
+            {/* Ambient Background */}
+            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-brand-orange/20 via-transparent to-transparent opacity-50" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-orange/30 rounded-full blur-[100px]" />
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-brand-orange to-purple-500 rounded-full blur opacity-75" />
+                  <Avatar className="h-24 w-24 border-4 border-[#111827] relative z-10">
+                    <AvatarImage src={currentDesigner.avatar} alt={currentDesigner.name} />
+                    <AvatarFallback className="text-2xl bg-gray-800 text-gray-400">
+                      {currentDesigner.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
                   {currentDesigner.featured && (
-                    <Badge className="bg-accent text-accent-foreground">
-                      Featured Designer
-                    </Badge>
+                    <div className="absolute -bottom-2 -right-2 bg-brand-orange text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border-4 border-[#111827] shadow-lg z-20">
+                      Featured
+                    </div>
                   )}
                 </div>
-                <p className="text-muted-foreground">
-                  Manage your designs, track sales, and view your earnings.
-                </p>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl md:text-4xl font-black font-display tracking-tight text-white">
+                      Hello, {currentDesigner.name.split(' ')[0]}
+                    </h1>
+                  </div>
+                  <p className="text-gray-400 text-lg max-w-md font-medium">
+                    Your creative empire is growing. Here's what's happening with your studio today.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex gap-4">
+                  <Button asChild className="gap-2 bg-brand-orange hover:bg-brand-orange/90 text-white border-0 shadow-lg shadow-brand-orange/20">
+                    <Link to="/designer/assets">
+                      <Plus className="h-4 w-4" />
+                      New Asset Upload
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
-            <DesignSubmissionForm />
           </div>
 
           {/* Stats Cards */}
@@ -124,14 +149,37 @@ export default function DesignerDashboardPage() {
           </div>
 
           {/* Main Content Tabs */}
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="bg-muted/50 p-1">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="designs">My Designs</TabsTrigger>
-              <TabsTrigger value="sales">Sales History</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="overview" className="space-y-8">
+            <div className="border-b border-border/40">
+              <TabsList className="bg-transparent h-auto p-0 gap-8 justify-start w-full overflow-x-auto no-scrollbar">
+                <TabsTrigger
+                  value="overview"
+                  className="rounded-none border-b-2 border-transparent px-0 py-3 font-medium text-muted-foreground data-[state=active]:border-brand-orange data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all hover:text-foreground"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger
+                  value="designs"
+                  className="rounded-none border-b-2 border-transparent px-0 py-3 font-medium text-muted-foreground data-[state=active]:border-brand-orange data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all hover:text-foreground"
+                >
+                  My Designs
+                </TabsTrigger>
+                <TabsTrigger
+                  value="sales"
+                  className="rounded-none border-b-2 border-transparent px-0 py-3 font-medium text-muted-foreground data-[state=active]:border-brand-orange data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all hover:text-foreground"
+                >
+                  Sales History
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="rounded-none border-b-2 border-transparent px-0 py-3 font-medium text-muted-foreground data-[state=active]:border-brand-orange data-[state=active]:text-foreground data-[state=active]:shadow-none transition-all hover:text-foreground"
+                >
+                  Settings
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value="overview" className="space-y-6">
+            <TabsContent value="overview" className="space-y-6 animate-in slide-in-from-bottom-2 duration-500 fade-in">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <EarningsChart data={monthlyEarningsData} />
@@ -149,6 +197,10 @@ export default function DesignerDashboardPage() {
 
             <TabsContent value="sales">
               <SalesTable sales={mockSalesRecords} />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <DesignerSettingsForm />
             </TabsContent>
           </Tabs>
         </div>
