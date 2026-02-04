@@ -49,6 +49,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
     e.preventDefault();
     e.stopPropagation();
     globalToggleWishlist(product.id);
+    if (!isWishlisted) {
+      toast.success(`Saved ${product.name} to wishlist`, {
+        icon: <Heart size={14} className="fill-red-500 text-red-500" />
+      });
+    } else {
+      toast.info(`Removed ${product.name} from wishlist`);
+    }
   };
 
   return (

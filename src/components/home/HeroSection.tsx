@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, CheckCircle2, Palette, ChevronRight, Star, MousePointer2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 const HeroSection: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const { user, isLoggedIn } = useAuth();
 
   useEffect(() => {
     setLoaded(true);
@@ -61,7 +63,9 @@ const HeroSection: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-lg shadow-black/5 group cursor-default hover:bg-white/10 transition-colors duration-500 overflow-hidden relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] animate-[shimmer_3s_infinite]" />
                 <Sparkles size={14} className="text-brand-yellow" />
-                <span className="text-xs font-bold tracking-[0.2em] uppercase text-foreground/90 font-display relative z-10">Handcrafted Excellence</span>
+                <span className="text-xs font-bold tracking-[0.2em] uppercase text-foreground/90 font-display relative z-10">
+                  {isLoggedIn ? `Welcome, ${user?.name}` : 'Handcrafted Excellence'}
+                </span>
               </div>
 
               {/* Editoral Headline */}

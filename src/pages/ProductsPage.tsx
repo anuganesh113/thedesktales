@@ -13,6 +13,7 @@ const ProductsPage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const categoryParam = searchParams.get('category');
     const searchParam = searchParams.get('search');
+    const sortParam = searchParams.get('sort');
 
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedPriceRange, setSelectedPriceRange] = useState<string>('');
@@ -27,7 +28,11 @@ const ProductsPage: React.FC = () => {
         } else {
             setSelectedCategories([]);
         }
-    }, [categoryParam]);
+
+        if (sortParam) {
+            setSortBy(sortParam);
+        }
+    }, [categoryParam, sortParam]);
 
     const handleCategoryToggle = (slug: string) => {
         setSelectedCategories(prev => {
@@ -102,6 +107,7 @@ const ProductsPage: React.FC = () => {
         } else if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
         else if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
         else if (sortBy === 'newest') result.sort((a, b) => (b.newArrival ? 1 : 0) - (a.newArrival ? 1 : 0));
+        else if (sortBy === 'best-selling') result.sort((a, b) => (b.bestseller ? 1 : 0) - (a.bestseller ? 1 : 0));
 
         return result;
     }, [selectedCategories, selectedPriceRange, sortBy, searchParam]);
@@ -316,6 +322,7 @@ const ProductsPage: React.FC = () => {
                                         <SelectContent>
                                             <SelectItem value="featured">Featured</SelectItem>
                                             <SelectItem value="newest">Newest</SelectItem>
+                                            <SelectItem value="best-selling">Best Sellers</SelectItem>
                                             <SelectItem value="price-low">Price: Low to High</SelectItem>
                                             <SelectItem value="price-high">Price: High to Low</SelectItem>
                                         </SelectContent>

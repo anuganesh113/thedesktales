@@ -7,6 +7,8 @@ import { Github, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '@/assets/logo.png';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -17,15 +19,31 @@ interface AuthModalProps {
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'login' }) => {
     const [view, setView] = useState<'login' | 'register'>(initialView);
 
+    const { login } = useAuth();
+
     const handleGoogleLogin = () => {
-        const clientId = "YOUR_GOOGLE_CLIENT_ID"; // Replace with actual Client ID
-        const redirectUri = `${window.location.origin}`; // Redirect back to home for now
-        const scope = "email profile openid";
-        const responseType = "token";
+        // Mock login for now
+        login({
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+        });
+        toast.success('Successfully signed in with Google!');
+        onClose();
+    };
 
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${responseType}&scope=${encodeURIComponent(scope)}`;
-
-        window.location.href = authUrl;
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Use test data for any login attempt
+        login({
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+        });
+        toast.success(`Welcome back, Test User!`);
+        onClose();
     };
 
     return (
@@ -73,7 +91,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'l
                     <div className="grid grid-cols-2 gap-4">
                         <Button
                             variant="outline"
-                            className="rounded-2xl py-6 border-gray-100 font-bold text-[10px] uppercase tracking-widest gap-2 hover:bg-gray-50 transition-all"
+                            className="rounded-2xl py-6 border-gray-100 font-bold text-[10px] uppercase tracking-widest gap-2 hover:bg-gray-50 hover:text-[#111827] transition-all"
                             onClick={handleGoogleLogin}
                         >
                             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -84,7 +102,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'l
                             </svg>
                             Google
                         </Button>
-                        <Button variant="outline" className="rounded-2xl py-6 border-gray-100 font-bold text-[10px] uppercase tracking-widest gap-2 hover:bg-gray-50 transition-all">
+                        <Button variant="outline" className="rounded-2xl py-6 border-gray-100 font-bold text-[10px] uppercase tracking-widest gap-2 hover:bg-gray-50 hover:text-[#111827] transition-all">
                             <Github size={16} />
                             Github
                         </Button>
@@ -100,7 +118,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'l
                     </div>
 
                     {/* Email Form */}
-                    <div className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={view}
@@ -122,24 +140,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView = 'l
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-[#111827] ml-1">Email Address</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />
-                                        <Input placeholder="name@example.com" className="rounded-2xl py-6 pl-12 bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-[6px] focus:ring-[#F97316]/5 transition-all" />
+                                        <Input placeholder="name@example.com" value="test@example.com" readOnly className="rounded-2xl py-6 pl-12 bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-[6px] focus:ring-[#F97316]/5 transition-all" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-[#111827] ml-1">Password</Label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />
-                                        <Input type="password" placeholder="••••••••" className="rounded-2xl py-6 pl-12 bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-[6px] focus:ring-[#F97316]/5 transition-all" />
+                                        <Input type="password" placeholder="••••••••" value="password" readOnly className="rounded-2xl py-6 pl-12 bg-gray-50/50 border-gray-100 focus:bg-white focus:ring-[6px] focus:ring-[#F97316]/5 transition-all" />
                                     </div>
                                 </div>
                             </motion.div>
                         </AnimatePresence>
 
-                        <Button className="w-full py-7 rounded-2xl bg-[#111827] hover:bg-[#F97316] text-white font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#111827]/10 group">
+                        <Button type="submit" className="w-full py-7 rounded-2xl bg-[#111827] hover:bg-[#F97316] text-white font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#111827]/10 group">
                             {view === 'login' ? 'Sign In' : 'Create My Account'}
                             <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform" />
                         </Button>
-                    </div>
+                    </form>
                 </div>
             </DialogContent>
         </Dialog>

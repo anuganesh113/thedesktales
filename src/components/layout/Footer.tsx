@@ -46,7 +46,8 @@ const Footer: React.FC = () => {
                 { name: 'Best Sellers', href: '/products?sort=best-selling' },
                 { name: 'Desk Mats', href: '/products?category=desk-mat' },
                 { name: 'Mousepads', href: '/products?category=mousepad' },
-                { name: 'Accessories', href: '/products?category=accessory' }
+                { name: 'Posters', href: '/products?category=poster' },
+                { name: 'Custom Prints', href: '/products?category=custom' }
               ].map((link) => (
                 <li key={link.name}>
                   <Link to={link.href} className="flex items-center gap-2 text-white/50 hover:text-white transition-colors group text-sm font-medium">
@@ -64,11 +65,8 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               {[
                 { name: 'About Us', href: '/about' },
-                { name: 'Our Story', href: '/story' },
                 { name: 'Become a Designer', href: '/designer-apply' },
                 { name: 'Designers', href: '/designers' },
-                { name: 'Careers', href: '/careers' },
-                { name: 'Affiliates', href: '/affiliates' },
                 { name: 'Terms of Service', href: '/terms' },
                 { name: 'DMCA Policy', href: '/dmca' }
               ].map((link) => (
@@ -103,7 +101,7 @@ const Footer: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-xs text-white/30 uppercase tracking-wide">Location</p>
-                    <p className="font-medium text-sm">Los Angeles, CA</p>
+                    <p className="font-medium text-sm">New Baneshwor, Kathmandu</p>
                   </div>
                 </div>
               </li>

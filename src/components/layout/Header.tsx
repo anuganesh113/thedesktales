@@ -6,11 +6,25 @@ import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 import SearchModal from '../common/SearchModal';
+import AuthModal from '../auth/AuthModal';
+import { useAuth } from '@/context/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { LogOut, Settings, Package, Heart } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { user, isLoggedIn, logout } = useAuth();
   const location = useLocation();
 
   // Helper to determine if a link is active
@@ -94,11 +108,62 @@ const Header: React.FC = () => {
             <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
               <Search size={20} />
             </Button>
-            <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
-              <Link to="/account">
+
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full overflow-hidden border border-border/50">
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={20} />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-bold leading-none">{user?.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link to="/account/orders">
+                    <DropdownMenuItem className="cursor-pointer gap-2">
+                      <Package size={16} />
+                      Orders
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/account/wishlist">
+                    <DropdownMenuItem className="cursor-pointer gap-2">
+                      <Heart size={16} />
+                      Wishlist
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/account/settings">
+                    <DropdownMenuItem className="cursor-pointer gap-2">
+                      <Settings size={16} />
+                      Settings
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer gap-2 text-red-500 focus:text-red-500"
+                    onClick={() => {
+                      logout();
+                      toast.success('Signed out successfully');
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="icon" onClick={() => setIsAuthOpen(true)}>
                 <User size={20} />
-              </Link>
-            </Button>
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -155,6 +220,7 @@ const Header: React.FC = () => {
         </div>
       </div>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </header>
   );
 };
