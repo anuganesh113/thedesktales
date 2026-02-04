@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ProductsPage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const categoryParam = searchParams.get('category');
+    const searchParam = searchParams.get('search');
 
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedPriceRange, setSelectedPriceRange] = useState<string>('');
@@ -75,7 +76,14 @@ const ProductsPage: React.FC = () => {
                 else if (selectedPriceRange === 'Rs. 3000+') matchesPrice = product.price > 3000;
             }
 
-            return matchesCategory && matchesPrice;
+            let matchesSearch = true;
+            if (searchParam) {
+                matchesSearch = product.name.toLowerCase().includes(searchParam.toLowerCase()) ||
+                    product.category.toLowerCase().includes(searchParam.toLowerCase()) ||
+                    product.description.toLowerCase().includes(searchParam.toLowerCase());
+            }
+
+            return matchesCategory && matchesPrice && matchesSearch;
         });
 
         if (sortBy === 'featured') {
@@ -96,7 +104,7 @@ const ProductsPage: React.FC = () => {
         else if (sortBy === 'newest') result.sort((a, b) => (b.newArrival ? 1 : 0) - (a.newArrival ? 1 : 0));
 
         return result;
-    }, [selectedCategories, selectedPriceRange, sortBy]);
+    }, [selectedCategories, selectedPriceRange, sortBy, searchParam]);
 
     return (
         <Layout>
@@ -288,10 +296,17 @@ const ProductsPage: React.FC = () => {
                         <div className="flex-1">
                             {/* Top Bar - Count & Sort */}
                             <div className="flex items-center justify-between mb-8">
-                                <p className="text-sm text-gray-600">
-                                    Showing <span className="font-semibold">{Math.min(visibleItems, filteredProducts.length)}</span> of{' '}
-                                    <span className="font-semibold">{filteredProducts.length}</span> products
-                                </p>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-600">
+                                        Showing <span className="font-semibold">{Math.min(visibleItems, filteredProducts.length)}</span> of{' '}
+                                        <span className="font-semibold">{filteredProducts.length}</span> products
+                                    </p>
+                                    {searchParam && (
+                                        <p className="text-xs text-muted-foreground uppercase tracking-widest font-black">
+                                            Search results for: <span className="text-accent">"{searchParam}"</span>
+                                        </p>
+                                    )}
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600">Sort by:</span>
                                     <Select value={sortBy} onValueChange={setSortBy}>

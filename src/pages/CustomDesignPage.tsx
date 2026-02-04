@@ -1,16 +1,24 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ShoppingCart, Save, ChevronLeft, Info, Upload, Sparkles, Zap, Star, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import RealisticPreview from '@/components/custom/RealisticPreview';
 import DesignerControls from '@/components/custom/DesignerControls';
+import { getProductById } from '@/data/mockData';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/data/mockData';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const SIZES = [
+const MOUSEPAD_SIZE = { id: 'mousepad', name: 'CUSTOM MOUSEPAD (23CM X 19CM)', width: 23, height: 19, price: 899 };
+
+const POSTER_SIZES = [
+  { id: 'a3', name: 'A3 (29.7CM X 42.0CM)', width: 29.7, height: 42, price: 1499 },
+  { id: 'a4', name: 'A4 (21.0CM X 29.7CM)', width: 21, height: 29.7, price: 1099 },
+];
+
+const DESKMAT_SIZES = [
   { id: 'm', name: 'MEDIUM (28CM X 60CM)', width: 60, height: 28, price: 2499 },
   { id: 'l', name: 'LARGE (30CM X 82CM)', width: 82, height: 30, price: 3299 },
   { id: 'xl', name: 'EXTRA LARGE (42CM X 90CM)', width: 90, height: 42, price: 4499 },
@@ -33,12 +41,24 @@ const TEMPLATES = [
 
 const CustomDesignPage: React.FC = () => {
   const { addToCart } = useCart();
-  const [selectedSize, setSelectedSize] = useState<SizeOption>(SIZES[0]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const type = searchParams.get('type') || 'deskmat';
+  const isMousepadType = type === 'mousepad' || type === 'p-custom-mousepad' || getProductById(type)?.category === 'mousepad';
+  const isPosterType = type === 'poster' || type === 'p-custom-poster' || getProductById(type)?.category === 'poster';
+
+  const availableSizes = isMousepadType ? [MOUSEPAD_SIZE] : isPosterType ? POSTER_SIZES : DESKMAT_SIZES;
+
+  const [selectedSize, setSelectedSize] = useState<SizeOption>(availableSizes[0]);
   const [image, setImage] = useState<string | null>(null);
   const [imageMeta, setImageMeta] = useState<{ width: number; height: number } | null>(null);
   const [showTemplates, setShowTemplates] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [showProTips, setShowProTips] = useState(true);
+
+  // Update selected size if type changes
+  useEffect(() => {
+    setSelectedSize(availableSizes[0]);
+  }, [type]);
 
   const [controls, setControls] = useState({
     position: { x: 0, y: 0 },
@@ -96,20 +116,27 @@ const CustomDesignPage: React.FC = () => {
       return;
     }
 
+    const isMousepad = selectedSize.id === 'mousepad';
+    const isPoster = selectedSize.id === 'a3' || selectedSize.id === 'a4';
+
     const customProduct: Product = {
-      id: 'custom-deskmat',
-      name: `Custom Deskmat`,
+      id: isMousepad ? 'custom-mousepad' : isPoster ? 'custom-poster' : 'custom-deskmat',
+      name: isMousepad ? `Custom Mousepad` : isPoster ? `Custom Poster` : `Custom Deskmat`,
       category: 'custom',
       price: selectedSize.price,
       image: image,
       images: [image],
-      description: `Custom designed deskmat - ${selectedSize.name}`,
+      description: isMousepad
+        ? `Custom designed mousepad - ${selectedSize.name}`
+        : isPoster
+          ? `Custom designed poster - ${selectedSize.name}`
+          : `Custom designed deskmat - ${selectedSize.name}`,
       sizes: [selectedSize.name],
       colors: [{ name: 'Custom', value: '#000000' }],
       rating: 5,
       reviewCount: 0,
       inStock: true,
-      material: 'High-Density Fiber',
+      material: isMousepad ? 'Smooth Cloth' : isPoster ? 'Premium Matte Paper' : 'High-Density Fiber',
       reviews: []
     };
 
@@ -163,7 +190,7 @@ const CustomDesignPage: React.FC = () => {
 
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-400">Dream Deskmat</span>
+                Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-400">Dream {isMousepadType ? 'Mousepad' : isPosterType ? 'Poster' : 'Deskmat'}</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
                 Upload your artwork or choose from our curated templates. Our studio-grade preview shows exactly how your design will look in real life.
@@ -234,8 +261,10 @@ const CustomDesignPage: React.FC = () => {
               onReset={handleReset}
               controls={{ ...controls, image, quality }}
               selectedSize={selectedSize}
-              sizes={SIZES}
-              onSizeChange={(id) => setSelectedSize(SIZES.find(s => s.id === id) || SIZES[0])}
+              sizes={availableSizes}
+              onSizeChange={(id) => setSelectedSize(availableSizes.find(s => s.id === id) || availableSizes[0])}
+              currentType={type}
+              onTypeChange={(newType) => setSearchParams({ type: newType })}
             />
 
             {/* Templates Section */}

@@ -27,6 +27,7 @@ export interface Product {
   limited?: boolean;
   material: string;
   reviews: Review[];
+  frameColors?: { name: string; value: string }[];
 }
 
 export interface Review {
@@ -154,8 +155,13 @@ export const products: Product[] = [
     inStock: true,
     material: 'Premium Microfiber + Natural Rubber Base',
     bestseller: true,
-    newArrival: true,
+    newArrival: false,
     limited: false,
+    frameColors: [
+      { name: 'Black', value: '#000000' },
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Brown', value: '#5C4033' },
+    ]
   },
   {
     id: 'p-custom-mousepad',
@@ -186,11 +192,14 @@ export const products: Product[] = [
     image: customPosterImg,
     images: [customPosterImg],
     description: 'Transform your favorite memories or digital art into gallery-quality framed posters. Printed on premium matte paper with a sleek, modern frame.',
-    sizes: ['12x18"', '18x24"', '24x36"'],
+    sizes: ['A3', 'A4'],
     colors: [
-      { name: 'Black Frame', value: '#000000' },
-      { name: 'White Frame', value: '#FFFFFF' },
-      { name: 'Oak Frame', value: '#D2B48C' },
+      { name: 'Custom Design', value: '#F97316' },
+    ],
+    frameColors: [
+      { name: 'Black', value: '#000000' },
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Brown', value: '#5C4033' },
     ],
     rating: 4.9,
     reviewCount: 42,
@@ -403,7 +412,7 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1515404929826-76fff9fef6fe?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1515404929826-76fff9fef6fe?q=80&w=800&auto=format&fit=crop'],
     description: 'High-quality matte art print featuring calming ocean waves.',
-    sizes: ['A3', 'A2', 'A1'],
+    sizes: ['A3', 'A4'],
     colors: [{ name: 'Blue', value: '#0ea5e9' }],
     material: '300GSM Matte Paper',
     designer: designers[1],
@@ -411,7 +420,12 @@ export const products: Product[] = [
     reviewCount: 45,
     inStock: true,
     newArrival: true,
-    reviews: []
+    reviews: [],
+    frameColors: [
+      { name: 'Black', value: '#000000' },
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Brown', value: '#5C4033' },
+    ]
   },
   {
     id: 'p7',
@@ -421,14 +435,19 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop'],
     description: 'Modern abstract art print for contemporary spaces.',
-    sizes: ['A3', 'A2'],
+    sizes: ['A3', 'A4'],
     colors: [{ name: 'Multi', value: '#333' }],
     material: 'Textured Canvas',
     designer: designers[2],
     rating: 4.7,
     reviewCount: 23,
     inStock: true,
-    reviews: []
+    reviews: [],
+    frameColors: [
+      { name: 'Black', value: '#000000' },
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Brown', value: '#5C4033' },
+    ]
   },
   {
     id: 'p8',
@@ -508,14 +527,19 @@ export const products: Product[] = [
     image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop',
     images: ['https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop'],
     description: 'A striking fusion of traditional Japanese Oni motifs and cyberpunk aesthetics. High-quality velvet matte finish.',
-    sizes: ['A3', 'A2'],
+    sizes: ['A3', 'A4'],
     colors: [{ name: 'Neon Red', value: '#ef4444' }],
     material: '250GSM Velvet Matte Paper',
     designer: designers[2],
     rating: 4.8,
     reviewCount: 15,
     inStock: true,
-    reviews: []
+    reviews: [],
+    frameColors: [
+      { name: 'Black', value: '#000000' },
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Brown', value: '#5C4033' },
+    ]
   },
   {
     id: 'p13',

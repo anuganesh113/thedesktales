@@ -7,13 +7,14 @@ export interface CartItem {
   selectedSize: string;
   selectedColor: { name: string; value: string };
   selectedEdge?: string;
+  selectedFrameColor?: { name: string; value: string };
 }
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity?: number) => boolean;
-  removeFromCart: (productId: string, size: string, colorName: string, edge?: string) => void;
-  updateQuantity: (productId: string, size: string, colorName: string, edge: string | undefined, quantity: number) => void;
+  addToCart: (product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity?: number, frameColor?: { name: string; value: string }) => boolean;
+  removeFromCart: (productId: string, size: string, colorName: string, edge?: string, frameColorName?: string) => void;
+  updateQuantity: (productId: string, size: string, colorName: string, edge: string | undefined, quantity: number, frameColorName?: string) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -27,12 +28,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = useCallback((product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity = 1) => {
+  const addToCart = useCallback((product: Product, size: string, color: { name: string; value: string }, edge?: string, quantity = 1, frameColor?: { name: string; value: string }) => {
     const existingIndex = items.findIndex(
       item => item.product.id === product.id &&
         item.selectedSize === size &&
         item.selectedColor.name === color.name &&
-        item.selectedEdge === edge
+        item.selectedEdge === edge &&
+        item.selectedFrameColor?.name === frameColor?.name
     );
 
     if (existingIndex > -1) {
@@ -41,26 +43,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setItems(prevItems => [
       ...prevItems,
-      { product, quantity, selectedSize: size, selectedColor: color, selectedEdge: edge }
+      { product, quantity, selectedSize: size, selectedColor: color, selectedEdge: edge, selectedFrameColor: frameColor }
     ]);
     setIsCartOpen(true);
     return true;
   }, [items]);
 
-  const removeFromCart = useCallback((productId: string, size: string, colorName: string, edge?: string) => {
+  const removeFromCart = useCallback((productId: string, size: string, colorName: string, edge?: string, frameColorName?: string) => {
     setItems(prevItems =>
       prevItems.filter(
         item => !(item.product.id === productId &&
           item.selectedSize === size &&
           item.selectedColor.name === colorName &&
-          item.selectedEdge === edge)
+          item.selectedEdge === edge &&
+          item.selectedFrameColor?.name === frameColorName)
       )
     );
   }, []);
 
-  const updateQuantity = useCallback((productId: string, size: string, colorName: string, edge: string | undefined, quantity: number) => {
+  const updateQuantity = useCallback((productId: string, size: string, colorName: string, edge: string | undefined, quantity: number, frameColorName?: string) => {
     if (quantity <= 0) {
-      removeFromCart(productId, size, colorName, edge);
+      removeFromCart(productId, size, colorName, edge, frameColorName);
       return;
     }
 
@@ -69,7 +72,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         item.product.id === productId &&
           item.selectedSize === size &&
           item.selectedColor.name === colorName &&
-          item.selectedEdge === edge
+          item.selectedEdge === edge &&
+          item.selectedFrameColor?.name === frameColorName
           ? { ...item, quantity }
           : item
       )

@@ -23,6 +23,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useCart } from '@/context/CartContext';
 import Layout from '@/components/layout/Layout';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 type PaymentMethod = 'esewa' | 'khalti' | 'fonepay' | 'cod';
 
@@ -255,12 +256,15 @@ const CheckoutPage: React.FC = () => {
                                                 }`}
                                         >
                                             {gate.id === 'cod' ? (
-                                                <div className="text-center">
-                                                    <Truck className="mx-auto mb-1 text-gray-400" size={24} />
-                                                    <span className="text-[10px] font-bold uppercase tracking-tight leading-none block">COD</span>
+                                                <div className="flex flex-col items-center justify-center transition-all scale-125">
+                                                    <Truck className="mx-auto mb-1 text-gray-400" size={28} />
+                                                    <span className="text-[10px] font-bold uppercase tracking-tight leading-none block text-gray-500">COD</span>
                                                 </div>
                                             ) : (
-                                                <div className="w-24 h-12 flex items-center justify-center">
+                                                <div className={cn(
+                                                    "flex items-center justify-center transition-all",
+                                                    gate.id === 'fonepay' ? "w-32 h-16 scale-125" : "w-24 h-12"
+                                                )}>
                                                     {gate.icon ? (
                                                         <img src={gate.icon} alt={gate.name} className="max-w-full max-h-full object-contain" />
                                                     ) : (

@@ -19,9 +19,11 @@ interface DesignerControlsProps {
         image: string | null;
         quality: 'excellent' | 'good' | 'fair' | 'poor' | null;
     };
-    selectedSize: { width: number; height: number; name: string; price: number };
+    selectedSize: { id?: string; width: number; height: number; name: string; price: number };
     onSizeChange: (sizeId: string) => void;
     sizes: any[];
+    currentType: string;
+    onTypeChange: (type: string) => void;
 }
 
 const DesignerControls: React.FC<DesignerControlsProps> = ({
@@ -33,7 +35,9 @@ const DesignerControls: React.FC<DesignerControlsProps> = ({
     controls,
     selectedSize,
     onSizeChange,
-    sizes
+    sizes,
+    currentType,
+    onTypeChange
 }) => {
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -49,43 +53,72 @@ const DesignerControls: React.FC<DesignerControlsProps> = ({
 
     return (
         <div className="p-6 md:p-8 space-y-10">
-            {/* 1. Size Selection */}
+            {/* 0. Category Selection */}
             <section>
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-6">
-                    SELECT DIMENSIONS
+                    SELECT PRODUCT TYPE
                 </h3>
-                <div className="grid grid-cols-1 gap-3">
-                    {sizes.map((size) => (
+                <div className="flex p-1 bg-gray-100 rounded-2xl">
+                    {[
+                        { id: 'deskmat', name: 'Deskmat' },
+                        { id: 'mousepad', name: 'Mousepad' },
+                        { id: 'poster', name: 'Poster' }
+                    ].map((cat) => (
                         <button
-                            key={size.id}
-                            onClick={() => onSizeChange(size.id)}
+                            key={cat.id}
+                            onClick={() => onTypeChange(cat.id)}
                             className={cn(
-                                "group relative flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 text-left",
-                                selectedSize.name === size.name
-                                    ? "border-[#111827] bg-[#111827] text-white shadow-xl shadow-gray-200"
-                                    : "border-gray-100 bg-white hover:border-[#111827]/30"
+                                "flex-1 py-2 px-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                                currentType.includes(cat.id)
+                                    ? "bg-white text-[#111827] shadow-sm"
+                                    : "text-gray-400 hover:text-gray-600"
                             )}
                         >
-                            <div>
-                                <p className="text-sm font-bold uppercase tracking-tight">{size.name}</p>
-                                <p className={cn(
-                                    "text-[10px] font-medium tracking-wide",
-                                    selectedSize.name === size.name ? "text-gray-400" : "text-gray-500"
-                                )}>
-                                    {size.width}x{size.height}cm • High-Density Fiber
-                                </p>
-                            </div>
-                            <span className="font-black text-sm">Rs. {size.price}</span>
-
-                            {selectedSize.name === size.name && (
-                                <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#F97316] rounded-full flex items-center justify-center shadow-lg">
-                                    <CheckCircle2 size={12} className="text-white" strokeWidth={3} />
-                                </div>
-                            )}
+                            {cat.name}
                         </button>
                     ))}
                 </div>
             </section>
+
+            {/* 1. Size Selection */}
+            {sizes.length > 1 && (
+                <section>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-6">
+                        SELECT DIMENSIONS
+                    </h3>
+                    <div className="grid grid-cols-1 gap-3">
+                        {sizes.map((size) => (
+                            <button
+                                key={size.id}
+                                onClick={() => onSizeChange(size.id)}
+                                className={cn(
+                                    "group relative flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 text-left",
+                                    selectedSize.name === size.name
+                                        ? "border-[#111827] bg-[#111827] text-white shadow-xl shadow-gray-200"
+                                        : "border-gray-100 bg-white hover:border-[#111827]/30"
+                                )}
+                            >
+                                <div>
+                                    <p className="text-sm font-bold uppercase tracking-tight">{size.name}</p>
+                                    <p className={cn(
+                                        "text-[10px] font-medium tracking-wide",
+                                        selectedSize.name === size.name ? "text-gray-400" : "text-gray-500"
+                                    )}>
+                                        {size.width}x{size.height}cm • High-Density Fiber
+                                    </p>
+                                </div>
+                                <span className="font-black text-sm">Rs. {size.price}</span>
+
+                                {selectedSize.name === size.name && (
+                                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#F97316] rounded-full flex items-center justify-center shadow-lg">
+                                        <CheckCircle2 size={12} className="text-white" strokeWidth={3} />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             {/* 2. Upload Section */}
             <section>
@@ -147,7 +180,7 @@ const DesignerControls: React.FC<DesignerControlsProps> = ({
                                 <div className="flex justify-between items-center">
                                     <div className="flex items-center gap-2 text-gray-400">
                                         <Move size={14} />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Horizontal</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Horizontal (X)</span>
                                     </div>
                                     <span className="text-[10px] font-bold text-[#111827]">{controls.position.x}px</span>
                                 </div>
@@ -157,6 +190,23 @@ const DesignerControls: React.FC<DesignerControlsProps> = ({
                                     max={500}
                                     step={1}
                                     onValueChange={([val]) => onPositionChange({ ...controls.position, x: val })}
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-2 text-gray-400">
+                                        <Move size={14} className="rotate-90" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Vertical (Y)</span>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-[#111827]">{controls.position.y}px</span>
+                                </div>
+                                <Slider
+                                    value={[controls.position.y]}
+                                    min={-500}
+                                    max={500}
+                                    step={1}
+                                    onValueChange={([val]) => onPositionChange({ ...controls.position, y: val })}
                                 />
                             </div>
 

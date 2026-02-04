@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
+import SearchModal from '../common/SearchModal';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const location = useLocation();
+
+  // Helper to determine if a link is active
+  const isActive = (href: string) => {
+    if (href === '/products' && location.pathname === '/products' && location.search === '') {
+      return true;
+    }
+    return (location.pathname + location.search) === href;
+  };
 
   const navLinks = [
     { name: 'Shop All', href: '/products' },
@@ -58,10 +69,16 @@ const Header: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
+                className={cn(
+                  "text-sm font-medium transition-colors relative group",
+                  isActive(link.href) ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                <span className={cn(
+                  "absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300",
+                  isActive(link.href) ? "w-full" : "w-0 group-hover:w-full"
+                )} />
               </Link>
             ))}
             <Link
@@ -74,7 +91,7 @@ const Header: React.FC = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="hidden sm:flex">
+            <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
               <Search size={20} />
             </Button>
             <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
@@ -110,7 +127,10 @@ const Header: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.href}
-                className="py-3 px-4 text-foreground font-medium hover:bg-muted rounded-lg transition-colors"
+                className={cn(
+                  "py-3 px-4 font-medium rounded-lg transition-colors",
+                  isActive(link.href) ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+                )}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.name}
@@ -134,6 +154,7 @@ const Header: React.FC = () => {
           </nav>
         </div>
       </div>
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };

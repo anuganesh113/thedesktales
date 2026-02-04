@@ -39,9 +39,10 @@ const ProductDetailPage: React.FC = () => {
   const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('reviews');
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || '');
-  const [selectedColor, setSelectedColor] = useState(product?.colors[0] || '');
+  const [selectedSize, setSelectedSize] = useState<string>(product?.sizes[0] || '');
+
   const [selectedEdge, setSelectedEdge] = useState<'Plain' | 'Stitched Edge'>('Plain');
+  const [selectedFrameColor, setSelectedFrameColor] = useState<{ name: string; value: string }>(product?.frameColors?.[0] || { name: 'Black', value: '#000000' });
   const [quantity, setQuantity] = useState(1);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
@@ -96,7 +97,8 @@ const ProductDetailPage: React.FC = () => {
       selectedSize,
       product?.colors[0] || { name: 'Default', value: '' },
       (product.category === 'desk-mat' || product.category === 'mousepad') ? selectedEdge : undefined,
-      quantity
+      quantity,
+      product.category === 'poster' ? selectedFrameColor : undefined
     );
 
     if (added) {
@@ -112,7 +114,8 @@ const ProductDetailPage: React.FC = () => {
       selectedSize,
       product?.colors[0] || { name: 'Default', value: '' },
       (product.category === 'desk-mat' || product.category === 'mousepad') ? selectedEdge : undefined,
-      quantity
+      quantity,
+      product.category === 'poster' ? selectedFrameColor : undefined
     );
     navigate('/checkout');
   };
@@ -245,28 +248,30 @@ const ProductDetailPage: React.FC = () => {
               )}
             </div>
 
-
-
             {/* Size Selection */}
-            <div>
-              <h3 className="font-semibold mb-3">Size</h3>
-              <div className="flex flex-wrap gap-3">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={cn(
-                      "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors uppercase",
-                      selectedSize === size
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border hover:border-primary"
-                    )}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {product.sizes && product.sizes.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Size</h3>
+                <div className="flex flex-wrap gap-3">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={cn(
+                        "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors uppercase",
+                        selectedSize === size
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border hover:border-primary"
+                      )}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+
 
             {/* Edge Selection - Only for deskmats and mousepads */}
             {(product.category === 'desk-mat' || product.category === 'mousepad') && (
@@ -285,6 +290,51 @@ const ProductDetailPage: React.FC = () => {
                       )}
                     >
                       {edge}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Frame Color Selection - Only for posters */}
+            {product.category === 'poster' && product.frameColors && product.frameColors.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Frame Color</h3>
+                <div className="flex flex-wrap gap-4">
+                  {product.frameColors.map((color) => (
+                    <button
+                      key={color.name}
+                      onClick={() => setSelectedFrameColor(color)}
+                      className="group relative flex flex-col items-center gap-2"
+                    >
+                      <div
+                        className={cn(
+                          "w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center p-0.5 shadow-sm",
+                          selectedFrameColor.name === color.name
+                            ? "border-primary scale-110 shadow-md"
+                            : "border-border hover:border-primary"
+                        )}
+                        style={{ backgroundColor: color.value === '#FFFFFF' ? '#F9FAFB' : color.value }}
+                      >
+                        <div
+                          className="w-full h-full rounded-full border border-black/5"
+                          style={{ backgroundColor: color.value }}
+                        />
+                        {selectedFrameColor.name === color.name && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Check size={20} className={cn(
+                              "text-white drop-shadow-md",
+                              color.name === 'White' && "text-black drop-shadow-none"
+                            )} />
+                          </div>
+                        )}
+                      </div>
+                      <span className={cn(
+                        "text-[10px] font-black uppercase tracking-widest transition-all",
+                        selectedFrameColor.name === color.name ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
+                      )}>
+                        {color.name}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -484,7 +534,7 @@ const ProductDetailPage: React.FC = () => {
                 <p className="text-sm text-muted-foreground">Create your own unique version</p>
               </div>
               <Button variant="accent" asChild>
-                <Link to="/custom-design">Customize</Link>
+                <Link to={`/custom-design?type=${product.id}`}>Customize</Link>
               </Button>
             </div>
 

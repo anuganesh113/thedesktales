@@ -54,7 +54,7 @@ const CartDrawer: React.FC = () => {
               <ul className="space-y-4">
                 {items.map((item) => (
                   <li
-                    key={`${item.product.id}-${item.selectedSize}-${item.selectedColor.name}-${item.selectedEdge || 'none'}`}
+                    key={`${item.product.id}-${item.selectedSize}-${item.selectedColor.name}-${item.selectedEdge || 'none'}-${item.selectedFrameColor?.name || 'none'}`}
                     className="flex gap-4 p-3 bg-muted/50 rounded-lg animate-fade-in"
                   >
                     <div className="w-20 h-20 bg-muted rounded-md overflow-hidden shrink-0">
@@ -80,19 +80,25 @@ const CartDrawer: React.FC = () => {
                             <span>{item.selectedEdge}</span>
                           </>
                         )}
+                        {item.selectedFrameColor && (
+                          <>
+                            <span>•</span>
+                            <span>{item.selectedFrameColor.name} Frame</span>
+                          </>
+                        )}
                       </div>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-1 bg-background rounded-md border border-border">
                           <button
                             className="p-1.5 hover:bg-muted transition-colors rounded-l-md"
-                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity - 1, item.selectedFrameColor?.name)}
                           >
                             <Minus size={14} />
                           </button>
                           <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                           <button
                             className="p-1.5 hover:bg-muted transition-colors rounded-r-md"
-                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.quantity + 1, item.selectedFrameColor?.name)}
                           >
                             <Plus size={14} />
                           </button>
@@ -102,7 +108,7 @@ const CartDrawer: React.FC = () => {
                     </div>
                     <button
                       className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                      onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge)}
+                      onClick={() => removeFromCart(item.product.id, item.selectedSize, item.selectedColor.name, item.selectedEdge, item.selectedFrameColor?.name)}
                     >
                       <Trash2 size={18} />
                     </button>

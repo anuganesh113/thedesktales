@@ -9,7 +9,6 @@ import DesignerSpotlight from '@/components/home/DesignerSpotlight';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import SocialProofSection from '@/components/home/SocialProofSection';
 import FinalCTASection from '@/components/home/FinalCTASection';
-import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index: React.FC = () => {
   return (
@@ -17,7 +16,6 @@ const Index: React.FC = () => {
       <HeroSection />
       <CategorySection />
       <CustomDesignCTA />
-      <TestimonialsSection />
       <BestsellersSection />
       <LatestAdditionsSection />
       <DesignerSpotlight />

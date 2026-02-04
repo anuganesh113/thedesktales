@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
     e.preventDefault();
     e.stopPropagation();
     if (product.category === 'custom') {
-      navigate('/custom-design');
+      navigate(`/custom-design?type=${product.id}`);
     } else {
       const added = addToCart(product, product.sizes[0], product.colors[0]);
       if (added) {
@@ -58,7 +58,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, className, style, va
     >
       {/* Ghost Link - Makes the entire card clickable */}
       <Link
-        to={product.category === 'custom' ? '/custom-design' : `/products/${product.id}`}
+        to={product.category === 'custom' ? `/custom-design?type=${product.id}` : `/products/${product.id}`}
         className="absolute inset-0 z-10 rounded-3xl"
         aria-label={`View details for ${product.name}`}
       />

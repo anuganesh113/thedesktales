@@ -15,6 +15,8 @@ import DMCA from "./pages/legal/DMCA";
 import TermsOfService from "./pages/legal/TermsOfService";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 import NotFound from "./pages/NotFound";
 
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -29,7 +31,7 @@ const App = () => (
       <WishlistProvider>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <Sonner duration={3000} />
           <BrowserRouter>
             <ScrollToTop />
             <Routes>
@@ -44,6 +46,8 @@ const App = () => (
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/order-success" element={<OrderSuccessPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
